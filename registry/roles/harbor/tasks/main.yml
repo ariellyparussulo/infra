@@ -1,0 +1,26 @@
+- name: Download harbor package
+  get_url:
+    url: https://github.com/goharbor/harbor/releases/download/v2.1.2/harbor-offline-installer-v2.1.2.tgz
+    dest: /tmp/harbor.tgz
+    mode: '0777'
+- name: Extract /tmp/harbor.tgz
+  unarchive:
+    src: /tmp/harbor.tgz
+    dest: /tmp
+    remote_src: yes
+  args:
+    creates: /tmp/harbor
+- name: Put harbor template
+  template:
+    src: harbor.yml.j2
+    dest: /tmp/harbor/harbor.yml
+    owner: root
+    group: root
+    mode: '0777'
+- name: move docker-compose to /opt
+  shell: mkdir -p /opt/harbor && mv /tmp/harbor/ /opt/
+- name: Install harbor with clair
+  shell: /opt/harbor/install.sh --with-clair
+  args:
+    chdir: /opt
+    creates: harbor-install.log

@@ -1,0 +1,9 @@
+# ansible all -m ping
+all:
+  vars:
+    harbor_admin: cncfdemo
+    domain_name: localhost
+  children:
+    harbor:
+      hosts:
+        127.0.0.1
