@@ -1,13 +1,3 @@
-- pip:
-    name:
-      - docker
-- name: Remove swap file
-  mount:
-    name: swap
-    fstype: swap
-    state: absent
-- name: Disable Swap
-  command: swapoff -a
 - name: Installing Docker
   apt:
     name: "{{ packages }}"
@@ -15,12 +5,17 @@
     state: present
   vars:
     packages:
+      - wget
       - docker.io
 - name: Download Docker compose
   get_url:
-    url: https://github.com/docker/compose/releases/download/1.26.2/docker-compose-Linux-x86_64
+    url: https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-x86_64
     dest: /usr/local/bin/docker-compose
     mode: '0777'
+- name: Remount /tmp to give docker-compose access to it
+  shell: mount /tmp -o remount,exec
+- name: Copy docker-compose to /usr/bin
+  shell: ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
 - name: Reload configs
   systemd: daemon_reload=yes
 - name: Enable Docker Service
