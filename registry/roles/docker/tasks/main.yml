@@ -6,7 +6,10 @@
 - name: Remount /tmp to give docker-compose access to it
   shell: mount /tmp -o remount,exec
 - name: Copy docker-compose to /usr/bin
-  shell: ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+  file:
+    src: /usr/local/bin/docker-compose
+    dest: /usr/bin/docker-compose
+    state: link
 - name: Reload configs
   systemd: daemon_reload=yes
 - name: Enable Docker Service

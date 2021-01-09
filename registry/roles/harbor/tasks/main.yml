@@ -17,6 +17,11 @@
     owner: root
     group: root
     mode: '0777'
+- name: Move project to /opt
+  file:
+    path: /opt/harbor
+    state: directory
+    mode: '0777'
 - name: move docker-compose to /opt
   shell: mv /tmp/harbor/ /opt/
 - name: Install harbor with clair
