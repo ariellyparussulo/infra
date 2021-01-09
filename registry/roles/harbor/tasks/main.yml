@@ -18,7 +18,7 @@
     group: root
     mode: '0777'
 - name: move docker-compose to /opt
-  shell: mkdir -p /opt/harbor && mv /tmp/harbor/ /opt/
+  shell: mv /tmp/harbor/ /opt/
 - name: Install harbor with clair
   shell: /opt/harbor/install.sh --with-clair
   args:
