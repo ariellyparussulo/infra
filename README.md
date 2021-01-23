@@ -24,8 +24,8 @@ docker push localhost/infra/backend:1.0
 And for now, it accepts the following requests:
 
 ```sh
-curl http://$(minikube ip):8000/v1/users/123
-curl -X POST -H 'Content-Type: application/json' -d '{ "id": 123, "name": "arielly" }' http://$(minikube ip):8000/v1/users/
+curl http://localhost:8000/v1/users/123
+curl -X POST -H 'Content-Type: application/json' -d '{ "firstName": "name", "lastName": "name", "cpf": "000.000.000-00", "rg": "00.000.000-00" }' http://localhost:8000/v1/users/
 ```
 
 kubectl create secret generic regcred --from-file=.dockerconfigjson=/home/USER/.docker/config.json --type=kubernetes.io/dockerconfigjson --namespace=infra
