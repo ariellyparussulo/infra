@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  generation: 1
+  labels:
+    app: backend
+  name: backend
+  namespace: infra
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 4
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: backend
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - image: localhost/infra/backend:1.0
+          imagePullPolicy: IfNotPresent
+          name: backend
+          ports:
+          - containerPort: 8000
+            protocol: TCP
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "100Mi"
+            requests:
+              cpu: "250m"
+              memory: "50Mi"
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      terminationGracePeriodSeconds: 30
