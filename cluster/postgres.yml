@@ -7,7 +7,7 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: postgres-pv
-  namespace: infra
+namespace: infra
 spec:
   capacity:
     storage: 5Gi
@@ -23,7 +23,7 @@ metadata:
   name: postgres-pv-claim
   labels:
     app: postgres
-  namespace: infra
+namespace: infra
 spec:
   storageClassName: manual
   accessModes:
@@ -38,7 +38,7 @@ metadata:
   labels:
     app: postgres
   name: postgres
-  namespace: infra
+namespace: infra
 spec:
   serviceName: "postgres"
   replicas: 1
@@ -71,7 +71,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: postgres
-  namespace: infra
+namespace: infra
   labels:
     app: postgres
 spec:

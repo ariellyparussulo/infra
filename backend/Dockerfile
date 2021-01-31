@@ -8,13 +8,13 @@ RUN apk --no-cache update && apk --no-cache add git && \
     go get -u github.com/jinzhu/gorm && \
     go get -u github.com/jinzhu/pq && \
     go get -u github.com/jinzhu/gorm/dialects/postgres && \
-    go generate && go build -o main
+    go generate && go build
 
 FROM alpine:latest
 
 WORKDIR /server
 EXPOSE 8000
 
-COPY --from=builder /go/main .
+COPY --from=builder /go/backend .
 
-ENTRYPOINT [ "./main" ]
+ENTRYPOINT [ "./backend" ]
