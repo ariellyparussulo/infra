@@ -1,8 +1,10 @@
 - hosts: harbor
   gather_facts: False
-  connection: local
+  remote_user: harbor
   become: yes
   become_user: root
   roles:
+    - { role: commons }
     - { role: docker }
+    - { role: lets_encrypt }
     - { role: harbor }

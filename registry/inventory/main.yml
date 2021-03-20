@@ -1,9 +1,11 @@
 # ansible all -m ping
 all:
   vars:
+    ansible_ssh_user: harbor
     harbor_admin: cncfdemo
-    domain_name: localhost
+    domain_name: harbor.arielly.online
+    cert_admin_email: ariellyblabla@gmail.com
   children:
     harbor:
       hosts:
-        127.0.0.1
+        40.76.75.40

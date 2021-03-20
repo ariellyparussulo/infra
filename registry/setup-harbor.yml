@@ -1,0 +1,16 @@
+- name: Create Harbor VM
+  hosts: localhost
+  tasks:
+    - name: Create VM
+      ansible.builtin.shell: |
+        az group create --name InfraProject --location eastus
+        az vm create --resource-group InfraProject --name HarborRepository --image UbuntuLTS --admin-username harbor --ssh-key-values harbor.pub
+        az vm open-port --resource-group InfraProject --name HarborRepository --port 80 --priority 100
+        az vm open-port --resource-group InfraProject --name HarborRepository --port 443 --priority 101
+    - name: Get NM properties
+      ansible.builtin.shell: az vm show --resource-group InfraProject --name HarborRepository -d
+      register: vm_information
+    - set_fact:
+        vm_information: "{{ vm_information.stdout }}"
+    - name: Show public IP for new VM
+      ansible.builtin.shell: echo "{{ vm_information.publicIps }}"
