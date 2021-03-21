@@ -1,0 +1,77 @@
+  # - name: Pre Installation
+  #   hosts: localhost
+  #   become: true
+  #   tasks:
+  #     - name: Update repositories
+  #       apt:
+  #         update_cache: true
+  #     - name: Install packages
+  #       apt:
+  #         name: kubectl
+  #         state: present
+
+  #     - name: Download helm binary
+  #       get_url:
+  #        url: https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+  #        dest: /tmp/helm-installer
+  #        mode: '0777'
+
+  #     - name: Install helm
+  #       ansible.builtin.shell: /tmp/./helm-installer
+
+# - name: Start cluster
+#   hosts: localhost
+#   tasks:
+#     - name: Enable Cluster monitoring
+#       ansible.builtin.shell: |
+#         az provider register --namespace Microsoft.OperationsManagement
+#         az provider register --namespace Microsoft.OperationalInsights
+#     - name: Create Cluster in Azure
+#       ansible.builtin.shell: |
+#         # az aks create --resource-group InfraProject --name InfraProjectCluster --node-count 1 --enable-addons monitoring --generate-ssh-keys
+#         # az aks install-cli
+#         az aks get-credentials --resource-group InfraProject --name InfraProjectCluster
+
+- name: Create infra namespace
+  hosts: localhost
+  ignore_errors: yes
+  tasks:
+    - name: Create namespace
+      ansible.builtin.shell: |
+        kubectl create namespace infra
+        kubectl label namespace infra cert-manager.io/disable-validation=true
+
+
+- name: Deploy ingress inside Cluster
+  hosts: localhost
+  ignore_errors: yes
+  tasks:
+    - name: Install NGINX Ingress Controller
+      ansible.builtin.shell: |
+        helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+        helm install nginx-ingress ingress-nginx/ingress-nginx \
+          --namespace infra \
+          --set controller.replicaCount=2 \
+          --set controller.nodeSelector."beta\.kubernetes\.io/os"=linux \
+          --set defaultBackend.nodeSelector."beta\.kubernetes\.io/os"=linux \
+          --set controller.admissionWebhooks.patch.nodeSelector."beta\.kubernetes\.io/os"=linux
+
+    - name: Install Cert-Manager
+      ansible.builtin.shell: |
+        helm repo add jetstack https://charts.jetstack.io
+        helm install cert-manager jetstack/cert-manager \
+        --namespace infra \
+        --set installCRDs=true \
+        --set nodeSelector."kubernetes\.io/os"=linux \
+        --set webhook.nodeSelector."kubernetes\.io/os"=linux \
+        --set cainjector.nodeSelector."kubernetes\.io/os"=linux
+        kubectl create -f cluster-issuer.yml
+
+# - name: Create Postgres Database in Cluster
+#   hosts: localhost
+#   ignore_errors: yes
+#   tasks:
+#     - name: Deploy Postgres crendentials
+#       ansible.builtin.shell: kubectl create -f secrets/postgres.yml
+#     - name: Create Deployment and Service
+#       ansible.builtin.shell:  kubectl create -f postgres.yml
