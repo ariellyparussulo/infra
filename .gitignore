@@ -1,3 +1,5 @@
 .vscode
 *.pem
 secrets
+backend/pkg
+backend/src/github.com
